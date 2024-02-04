@@ -1,9 +1,9 @@
 let randomNumber;
 
 async function renderPokedeck() {
-    for (let i = 0; i < 2; i++) {
+    for (let i = 0; i < 20; i++) {
         randomCards();
-        let url = `https://pokeapi.co/api/v2/pokemon/` + 514;
+        let url = `https://pokeapi.co/api/v2/pokemon/` + randomNumber;
         let response = await fetch(url);
         let responseAsJson = await response.json();
         renderCard(responseAsJson, i);
@@ -38,10 +38,21 @@ function randomCards() {
 }
 
 function setBackground(index, i){
-    if (index === 'fire'){
-        document.getElementById(`poke${i}`).style.backgroungImage ='url("img/fire.png")';
-        console.log('eese')
-    
-    };
-
+    if (index === 'fire'){document.getElementById(`poke${i}`).style.backgroundImage ="url(img/fire.png)";};
+    if (index === 'electric'){document.getElementById(`poke${i}`).style.backgroundImage ="url(img/elektric.png)";};
+    if (index === 'water'){document.getElementById(`poke${i}`).style.backgroundImage ="url(img/water.png)";};
+    if (index === 'poison'){document.getElementById(`poke${i}`).style.backgroundImage ="url(img/poison.png)";};
+    if (index === 'fighting'){document.getElementById(`poke${i}`).style.backgroundImage ="url(img/fight.png)";};
+    if (index === 'psychic'){document.getElementById(`poke${i}`).style.backgroundImage ="url(img/psychic.png)";};
+    if (index === 'fairy'){document.getElementById(`poke${i}`).style.backgroundImage ="url(img/fairy.png)";};
+    if (index === 'ghost'){document.getElementById(`poke${i}`).style.backgroundImage ="url(img/ghost.png)";};
+    if (index === 'dragon'){document.getElementById(`poke${i}`).style.backgroundImage ="url(img/dragon.png)";};
+    if (index === 'ice'){document.getElementById(`poke${i}`).style.backgroundImage ="url(img/ice.png)";};
+    if (index === 'bug'){document.getElementById(`poke${i}`).style.backgroundImage ="url(img/bug.png)";};
+    if (index === 'grass'){document.getElementById(`poke${i}`).style.backgroundImage ="url(img/grass.png)";};
+    if (index === 'rock'){document.getElementById(`poke${i}`).style.backgroundImage ="url(img/ice.png)";};
+    if (index === 'steel'){document.getElementById(`poke${i}`).style.backgroundImage ="url(img/steel.png)";};
+    if (index === 'rock'){document.getElementById(`poke${i}`).style.backgroundImage ="url(img/rock.png)";};
+    if (index === 'ground'){document.getElementById(`poke${i}`).style.backgroundImage ="url(img/ground.png)";};
+    if (index === 'dark'){document.getElementById(`poke${i}`).style.backgroundImage ="url(img/dark.png)";};
 }
