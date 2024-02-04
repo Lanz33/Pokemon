@@ -15,6 +15,7 @@ body {
     box-shadow: 10px 5px 10px rgba(1, 1, 1, 0.2);
     margin: 16px;
     overflow: hidden;
+    background-image: url("./img/normal.png");
 }
 
 .pokeImage {
@@ -49,3 +50,4 @@ body {
 .pokeCard:hover h2{
     margin: 4px;
 }
+

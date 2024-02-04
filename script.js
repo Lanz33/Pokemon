@@ -1,9 +1,9 @@
 let randomNumber;
 
 async function renderPokedeck() {
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 2; i++) {
         randomCards();
-        let url = `https://pokeapi.co/api/v2/pokemon/` + randomNumber;
+        let url = `https://pokeapi.co/api/v2/pokemon/` + 514;
         let response = await fetch(url);
         let responseAsJson = await response.json();
         renderCard(responseAsJson, i);
@@ -28,11 +28,20 @@ function renderCard(responseAsJson, i) {
             </table>            
         </div>
     </div>`;
-    console.log(responseAsJson['sprites']['front_shiny']);
+    setBackground(responseAsJson['types']['0']['type']['name'], i);
     console.log(responseAsJson);
+    console.log(responseAsJson['types']['0']['type']['name']);
 }
 
 function randomCards() {
     randomNumber = Math.floor(Math.random() * 1024);
-    console.log(randomNumber);
+}
+
+function setBackground(index, i){
+    if (index === 'fire'){
+        document.getElementById(`poke${i}`).style.backgroungImage ='url("img/fire.png")';
+        console.log('eese')
+    
+    };
+
 }
