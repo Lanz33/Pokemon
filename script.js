@@ -1,7 +1,7 @@
 let randomNumber;
 
 async function renderPokedeck() {
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 2; i++) {
         randomCards();
         let url = `https://pokeapi.co/api/v2/pokemon/` + randomNumber;
         let response = await fetch(url);
@@ -33,11 +33,11 @@ async function renderBig(pokemonId){
     <div class="cardCenter" id="PokemonBig">
         <h2>${rename}</h2>
         <img class="pokeImage scale1-3" src="${pokemonData['sprites']['other']['official-artwork']['front_shiny']}">
-        <div class="headLine" id="headlineBig">
-            <div onclick="renderDetails(${pokemonData['id']}, PokemonBig)">Details</div>
-            <div onclick="renderStats(${pokemonData['id']}, PokemonBig)">Stats</div>
+        <div class="headLine" id="headlineBig" onclick="event.stopPropagation()">
+            <div onclick="renderDetails(${pokemonData['id']})">Details</div>
+            <div onclick="renderStats(${pokemonData['id']})">Stats</div>
         </div>
-        <div id="details"></div>
+        <div id="details">fgfgt</div>
         <canvas class="stats" id="statsArea"></canvas> 
     </div>
     `;
@@ -100,10 +100,11 @@ async function renderStats(pokemonId, index) {
 
 }
 
-async function renderDetails(pokemonId, index) {
+async function renderDetails(pokemonId) {
     let url = `https://pokeapi.co/api/v2/pokemon/` + pokemonId;
     let responseStats = await fetch(url);
     let pokemonData = await responseStats.json(); 
+    console.log('jawolll');
     let table = document.createElement('table');
     table.innerHTML = `<tr><td>Height: </td><td>${pokemonData['height']}</td></tr>`;
     table.innerHTML += `<tr><td>Weight: </td><td>${pokemonData['weight']}</td></tr>`;

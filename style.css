@@ -80,6 +80,7 @@ body {
     width: 60%;
     text-shadow: 0px 0px 16px rgb(252, 252, 252);
     z-index: 11;
+    cursor: pointer;
 }
 
 .pokeCard:hover table {
