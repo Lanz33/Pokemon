@@ -37,20 +37,38 @@ async function renderBig(pokemonId){
             <div onclick="renderDetails(${pokemonData['id']})">Details</div>
             <div onclick="renderStats(${pokemonData['id']})">Stats</div>
         </div>
-        <div id="details">fgfgt</div>
+        <div id="details"></div>
         <canvas class="stats" id="statsArea"></canvas> 
     </div>
     `;
     setBackgroundBig(pokemonData['types']['0']['type']['name']);
 }
 
+async function renderDetails(pokemonId) {
+    document.getElementById('statsArea').style.display = "none";
+    document.getElementById('details').style.display = "block";
+    let url = `https://pokeapi.co/api/v2/pokemon/` + pokemonId;
+    let responseStats = await fetch(url);
+    let pokemonData = await responseStats.json(); 
+    let table = document.createElement('tbody');
+    table.innerHTML = `<tr><td>Height: </td><td>${pokemonData['height']*10} cm</td><td> </td></tr>`;
+    table.innerHTML += `<tr><td>Weight: </td><td>${pokemonData['weight']} kg</td><td> </td></tr>`;
+    table.innerHTML += `<tr><td>Base Exp.: </td><td>${pokemonData['base_experience']}</td><td> </td></tr>`;
+    table.innerHTML += `<tr><td>Abilities: </td><td>${pokemonData['abilities']['0']['ability']['name']}</td><td> </td></tr>`;
+    table.innerHTML += `<tr><td>Form: </td><td>${pokemonData['forms']['0']['name']}</td><td> </td></tr>`;
+    document.getElementById('details').innerHTML = '';
+    document.getElementById('details').appendChild(table);
+}
+
 async function renderStats(pokemonId, index) {
     let url = `https://pokeapi.co/api/v2/pokemon/` + pokemonId;
     let responseStats = await fetch(url);
     let pokemonData = await responseStats.json();
-    
-    let ctx = document.getElementById(`displayStats${index}`);
-    ctx.clear;
+    document.getElementById('details').style.display = "none";
+    document.getElementById('statsArea').style.display = "block";
+    let ctx = document.getElementById('statsArea');
+    ctx.innerHTML = '';
+
     let rowData = [];
     for (let i = 0; i < 6; i++) {
         rowData.push(pokemonData['stats'][i]['base_stat'])
@@ -61,7 +79,6 @@ async function renderStats(pokemonId, index) {
         data: {
             labels: ['HP', 'Attack', 'Defence', 'Special Attack', 'Special Defence', 'Speed'],
             datasets: [{
-                
                 data: rowData,
                 backgroundColor: [
                 'rgb(255, 99, 132)',
@@ -85,34 +102,10 @@ async function renderStats(pokemonId, index) {
             },
             scales: {
                 x: {display: false},
-                y: [{
-                    ticks: {
-                        fontColor: 'rgb(255, 255, 255)',
-
-                    }
-                }]
             },
         }
     });
-    ctx.addEventListener('mouseout', () => {
-        document.getElementById(`displayStats${index}`).innerHTML= '';
-      });
 
-}
-
-async function renderDetails(pokemonId) {
-    let url = `https://pokeapi.co/api/v2/pokemon/` + pokemonId;
-    let responseStats = await fetch(url);
-    let pokemonData = await responseStats.json(); 
-    console.log('jawolll');
-    let table = document.createElement('table');
-    table.innerHTML = `<tr><td>Height: </td><td>${pokemonData['height']}</td></tr>`;
-    table.innerHTML += `<tr><td>Weight: </td><td>${pokemonData['weight']}</td></tr>`;
-    table.innerHTML += `<tr><td>Base Exp.: </td><td>${pokemonData['base_experience']}</td></tr>`;
-    table.innerHTML += `<tr><td>Abilities: </td><td>${pokemonData['abilities']['0']['ability']['name']}</td>`;
-    table.innerHTML += `<tr><td>Form: </td><td>${pokemonData['forms']['0']['name']}</td></tr>`;
-    document.getElementById(`details`).innerHTML = '';
-    document.getElementById(`details`).appendChild(table);
 }
 
 function randomCards() {
