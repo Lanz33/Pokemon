@@ -1,7 +1,8 @@
 let randomNumber;
+let generatedNumbers = [];
 
 async function renderPokedeck() {
-    for (let i = 0; i < 2; i++) {
+    for (let i = 0; i < 20; i++) {
         randomCards();
         let url = `https://pokeapi.co/api/v2/pokemon/` + randomNumber;
         let response = await fetch(url);
@@ -109,7 +110,11 @@ async function renderStats(pokemonId, index) {
 }
 
 function randomCards() {
-    randomNumber = Math.floor(Math.random() * 1024);
+    do {
+        randomNumber = Math.floor(Math.random() * 1024);
+    } while (generatedNumbers.includes(randomNumber));
+    generatedNumbers.push(randomNumber);
+    return randomNumber;
 }
 
 function barChart(index) {
@@ -134,4 +139,19 @@ function barChart(index) {
 
 function displayOff(){
     document.getElementById('fullscreen').style.display = "none";
+}
+
+async function pokeQuery(){
+    searchPoke = document.getElementById('searchQuery').value;
+    document.getElementById('cards').innerHTML = '';
+    let url = `https://pokeapi.co/api/v2/pokemon/` + searchPoke;
+    let response = await fetch(url);
+    let responseAsJson = await response.json();
+    if(searchPoke==``){
+        renderPokedeck();
+    }
+    if(response.status != 4){
+        renderCard(responseAsJson);
+    }
+    
 }

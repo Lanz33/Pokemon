@@ -12,7 +12,7 @@ body {
     height: 300px;
     border: 1px black solid;
     border-radius: 16px;
-    box-shadow: 10px 5px 10px rgba(1, 1, 1, 0.2);
+    box-shadow: 10px 5px 10px rgba(1, 1, 1, 0.2), 20px 10px 20px rgba(1, 1, 1, 0.7);
     margin: 16px;
     overflow: hidden;
     background-image: url("./img/normal.png");
@@ -110,8 +110,9 @@ h2 {
 }
 
 #details {
+    margin-top: 8px;
     width: 310px;
-    height: 100px;
+    height: 155px;
     bottom: 0;
     left: 0;
     right: 0;
@@ -221,4 +222,59 @@ canvas{
     height: 100px;
     margin: 0;
     backdrop-filter: blur(5px);
+}
+
+.searchField{
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    top: 10px;
+    left: 10px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    border-radius: 5px;
+    transition: 500ms;
+}
+
+.searchField input::placeholder{
+    color: transparent;
+    transition: 400ms ease-in-out;
+}
+
+.searchField:hover input::placeholder{
+    color: #4670F1;
+}
+
+.searchField:hover{
+    width: 150px;
+}
+
+.searchField input{
+    border-radius: 25px;
+    padding-left: 10px;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border: none;
+    outline: none;
+    background: linear-gradient(180deg, rgb(206, 212, 243) 0%, rgba(70, 85, 252, 0.269) 100%);
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.2),
+    10px 10px 10px rgba(0, 0, 0, 0.4),
+    15px 15px 15px rgba(0, 0, 0, 0.6);
+    color: transparent;
+    transition: 500ms;
+    text-decoration-color: transparent;
+}
+
+.searchField:hover input{
+    color: beige;
+}
+
+.searchField img {
+    position: absolute;
+    right: 15px;
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
 }
