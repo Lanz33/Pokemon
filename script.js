@@ -1,8 +1,8 @@
 let randomNumber;
 let generatedNumbers = [];
 
-async function renderPokedeck() {
-    for (let i = 0; i < 20; i++) {
+async function renderPokedeck(j) {
+    for (let i = 0; i < 20+j; i++) {
         randomCards();
         let url = `https://pokeapi.co/api/v2/pokemon/` + randomNumber;
         let response = await fetch(url);
@@ -11,16 +11,15 @@ async function renderPokedeck() {
     }
 }
 
-function renderCard(responseAsJson, i) {
+function renderCard(responseAsJson) {
     let card = document.getElementById('cards');
     let rename = responseAsJson['name'].charAt(0).toUpperCase() + responseAsJson['name'].slice(1);
     card.innerHTML += `
-    <div id="poke${i}" class="pokeCard" onclick="renderBig(${responseAsJson['id']})">
+    <div id="poke${responseAsJson['id']}" class="pokeCard" onclick="renderBig(${responseAsJson['id']})">
         <h2>${rename}</h2>
         <img class="pokeImage" src="${responseAsJson['sprites']['other']['official-artwork']['front_shiny']}">
-      
     </div>`;
-    setBackground(responseAsJson['types']['0']['type']['name'], i);
+    setBackground(responseAsJson['types']['0']['type']['name'], responseAsJson['id']);
     console.log(responseAsJson);
 }
 
@@ -52,11 +51,13 @@ async function renderDetails(pokemonId) {
     let responseStats = await fetch(url);
     let pokemonData = await responseStats.json(); 
     let table = document.createElement('tbody');
-    table.innerHTML = `<tr><td>Height: </td><td>${pokemonData['height']*10} cm</td><td> </td></tr>`;
-    table.innerHTML += `<tr><td>Weight: </td><td>${pokemonData['weight']} kg</td><td> </td></tr>`;
-    table.innerHTML += `<tr><td>Base Exp.: </td><td>${pokemonData['base_experience']}</td><td> </td></tr>`;
-    table.innerHTML += `<tr><td>Abilities: </td><td>${pokemonData['abilities']['0']['ability']['name']}</td><td> </td></tr>`;
-    table.innerHTML += `<tr><td>Form: </td><td>${pokemonData['forms']['0']['name']}</td><td> </td></tr>`;
+    table.innerHTML = `<tr><td></td></tr>`;
+    table.innerHTML += `<tr><td>Height: </td><td>  ${pokemonData['height']*10} cm</td><td> </td></tr>`;
+    table.innerHTML += `<tr><td>Weight: </td><td>  ${pokemonData['weight']} kg</td><td> </td></tr>`;
+    table.innerHTML += `<tr><td>Base Exp.: </td><td>  ${pokemonData['base_experience']}</td><td> </td></tr>`;
+    table.innerHTML += `<tr><td>Abilities: </td><td>  ${pokemonData['abilities']['0']['ability']['name']}</td><td> </td></tr>`;
+    table.innerHTML += `<tr><td>Form: </td><td>  ${pokemonData['forms']['0']['name']}</td><td> </td></tr>`;
+    table.innerHTML += `<tr><td>Element: </td><td>  ${pokemonData['types']['0']['type']['name']}</td><td> </td></tr>`;
     document.getElementById('details').innerHTML = '';
     document.getElementById('details').appendChild(table);
 }
@@ -69,10 +70,17 @@ async function renderStats(pokemonId, index) {
     document.getElementById('statsArea').style.display = "block";
     let ctx = document.getElementById('statsArea');
     ctx.innerHTML = '';
-
     let rowData = [];
     for (let i = 0; i < 6; i++) {
         rowData.push(pokemonData['stats'][i]['base_stat'])
+    }
+    const chartContainer = document.getElementById('statsArea').parentElement; // Get the parent element of the canvas
+    chartContainer.style.position = 'relative'; // Set the parent element's position to relative
+
+    const yAxisLabels = chartContainer.querySelector('.chartjs-ylabel'); // Select the y-axis labels container
+
+    if (yAxisLabels) {
+        yAxisLabels.style.textShadow = '0px 0px 12px white'; // Apply white shadow effect
     }
     console.log(rowData);
     new Chart(ctx, {
@@ -102,6 +110,11 @@ async function renderStats(pokemonId, index) {
                 }
             },
             scales: {
+                y: {
+                    ticks: { // Customize y-axis labels
+                        color: 'black' // Black color for labels
+                    }
+                },
                 x: {display: false},
             },
         }
@@ -115,26 +128,6 @@ function randomCards() {
     } while (generatedNumbers.includes(randomNumber));
     generatedNumbers.push(randomNumber);
     return randomNumber;
-}
-
-function barChart(index) {
-    let percent = (index / 255) * 100;
-
-    // Erstellen des HTML-Elements für den Balken
-    let bar = document.createElement('div');
-    bar.style.width = percent + "%";
-    bar.style.height = "8px";
-    bar.style.backgroundColor = "blue";
-    bar.style.boxShadow = " 0px 0px 4px rgb(252, 252, 252)";
-
-    // Erstellen des HTML-Elements für die Zelle in der Tabelle
-    let cell = document.createElement('tr');
-
-    // Hinzufügen des Balkens zur Zelle
-    cell.appendChild(bar);
-
-    // Rückgabe der Zelle mit dem Balken
-    return cell;
 }
 
 function displayOff(){

@@ -12,11 +12,11 @@
   <link rel="icon" type="image/jpg" href="./img/favicon.jpeg">
 </head>
 
-<body onload="renderPokedeck()" id="body">
+<body onload="renderPokedeck(0)" id="body">
   
     <div class="header">
       <div class="searchField">
-        <input type="text" placeholder="search..." id="searchQuery">
+        <input type="text" placeholder="name or id" id="searchQuery">
         <img src="./img/lupe.png" onclick="pokeQuery()">
       </div>
       <div id="fullscreen" onclick="displayOff()">
@@ -24,6 +24,7 @@
       <img class="logo" src="./img/logo.png">
     </div>
     <div id="cards"></div>
+    <div class="morePoke" onclick="renderPokedeck(20)">&#x2B07;</div>
     <dic class="footer"> Copyright by Christian Fischer</dic>
   
 </body>
