@@ -1,58 +1,76 @@
-let randomNumber;
-let generatedNumbers = [];
-
 async function renderPokedeck(j) {
-    for (let i = 0; i < 20+j; i++) {
+    for (let i = 0; i < 15 + j; i++) {
         randomCards();
         let url = `https://pokeapi.co/api/v2/pokemon/` + randomNumber;
         let response = await fetch(url);
         let responseAsJson = await response.json();
-        renderCard(responseAsJson, i);
+        renderCard(responseAsJson);
     }
 }
 
 function renderCard(responseAsJson) {
     let card = document.getElementById('cards');
     let rename = responseAsJson['name'].charAt(0).toUpperCase() + responseAsJson['name'].slice(1);
+    pokeIndex = pokeIndex + 1;
+    let pokemonData = {
+        pokeIndex: pokeIndex,
+        id: responseAsJson['id']
+    };
+    pokemonDataAsJSON.push(pokemonData);
     card.innerHTML += `
-    <div id="poke${responseAsJson['id']}" class="pokeCard" onclick="renderBig(${responseAsJson['id']})">
+    <div id="poke${pokeIndex}" class="pokeCard" onclick="renderBig(${responseAsJson['id']}, ${pokeIndex})">
         <h2>${rename}</h2>
         <img class="pokeImage" src="${responseAsJson['sprites']['other']['official-artwork']['front_shiny']}">
     </div>`;
-    setBackground(responseAsJson['types']['0']['type']['name'], responseAsJson['id']);
-    console.log(responseAsJson);
+    setBackground(responseAsJson['types']['0']['type']['name'], pokeIndex);
 }
 
-async function renderBig(pokemonId){
+async function renderBig(pokemonId, pokeIndex) {
     let url = `https://pokeapi.co/api/v2/pokemon/` + pokemonId;
     let responseStats = await fetch(url);
     let pokemonData = await responseStats.json();
     let rename = pokemonData['name'].charAt(0).toUpperCase() + pokemonData['name'].slice(1);
     document.getElementById('fullscreen').style.display = "flex";
-    document.getElementById('fullscreen').innerHTML = `
-    <div class="cardCenter" id="PokemonBig">
-        <h2>${rename}</h2>
-        <img class="pokeImage scale1-3" src="${pokemonData['sprites']['other']['official-artwork']['front_shiny']}">
-        <div class="headLine" id="headlineBig" onclick="event.stopPropagation()">
-            <div onclick="renderDetails(${pokemonData['id']})">Details</div>
-            <div onclick="renderStats(${pokemonData['id']})">Stats</div>
-        </div>
-        <div id="details"></div>
-        <canvas class="stats" id="statsArea"></canvas> 
-    </div>
-    `;
+    fullScreenHTML(rename, pokemonData, pokeIndex);
     setBackgroundBig(pokemonData['types']['0']['type']['name']);
+    checkLeftRight(pokeIndex);
+}
+
+function cardBefore(pokeIndex) {
+    let foundEntry = pokemonDataAsJSON.find(entry => entry.pokeIndex === pokeIndex-1);
+    console.log(foundEntry);
+    renderBig(foundEntry.id, pokeIndex-1);
+}
+
+function cardAfter(pokeIndex) {
+    let foundEntry = pokemonDataAsJSON.find(entry => entry.pokeIndex === pokeIndex+1);
+    console.log(foundEntry);
+    renderBig(foundEntry.id, pokeIndex+1);
+}
+
+function checkLeftRight(cardID) {
+    if (cardID == 1) {
+        document.getElementById('left').style.display = "none";
+    }
+    else {
+        document.getElementById('left').style.display = "block";
+    }
+    if (cardID == pokeIndex) {
+        document.getElementById('right').style.display = "none";
+    }
+    else {
+        document.getElementById('right').style.display = "block";
+    }
 }
 
 async function renderDetails(pokemonId) {
-    document.getElementById('statsArea').style.display = "none";
-    document.getElementById('details').style.display = "block";
+    toggleDisplay();
     let url = `https://pokeapi.co/api/v2/pokemon/` + pokemonId;
     let responseStats = await fetch(url);
-    let pokemonData = await responseStats.json(); 
+    let pokemonData = await responseStats.json();
     let table = document.createElement('tbody');
     table.innerHTML = `<tr><td></td></tr>`;
-    table.innerHTML += `<tr><td>Height: </td><td>  ${pokemonData['height']*10} cm</td><td> </td></tr>`;
+    table.innerHTML += `<tr><td>Height: </td><td>  ${pokemonData['height'] * 10} cm</td><td> </td></tr>`;
     table.innerHTML += `<tr><td>Weight: </td><td>  ${pokemonData['weight']} kg</td><td> </td></tr>`;
     table.innerHTML += `<tr><td>Base Exp.: </td><td>  ${pokemonData['base_experience']}</td><td> </td></tr>`;
     table.innerHTML += `<tr><td>Abilities: </td><td>  ${pokemonData['abilities']['0']['ability']['name']}</td><td> </td></tr>`;
@@ -62,65 +80,54 @@ async function renderDetails(pokemonId) {
     document.getElementById('details').appendChild(table);
 }
 
-async function renderStats(pokemonId, index) {
-    let url = `https://pokeapi.co/api/v2/pokemon/` + pokemonId;
-    let responseStats = await fetch(url);
-    let pokemonData = await responseStats.json();
+function toggleDisplay() {
+    document.getElementById('statsArea').style.display = "none";
+    document.getElementById('details').style.display = "block";
+}
+
+async function renderStats(pokemonId) {
+    const pokemonData = await fetchPokemonData(pokemonId);
+    const chartData = prepareChartData(pokemonData);
+    const ctx = document.getElementById('statsArea').getContext('2d');
+    renderChart(ctx, chartData);
     document.getElementById('details').style.display = "none";
     document.getElementById('statsArea').style.display = "block";
-    let ctx = document.getElementById('statsArea');
-    ctx.innerHTML = '';
-    let rowData = [];
-    for (let i = 0; i < 6; i++) {
-        rowData.push(pokemonData['stats'][i]['base_stat'])
-    }
-    const chartContainer = document.getElementById('statsArea').parentElement; // Get the parent element of the canvas
-    chartContainer.style.position = 'relative'; // Set the parent element's position to relative
+}
 
-    const yAxisLabels = chartContainer.querySelector('.chartjs-ylabel'); // Select the y-axis labels container
+async function fetchPokemonData(pokemonId) {
+    const url = `https://pokeapi.co/api/v2/pokemon/${pokemonId}`;
+    const response = await fetch(url);
+    return await response.json();
+}
 
-    if (yAxisLabels) {
-        yAxisLabels.style.textShadow = '0px 0px 12px white'; // Apply white shadow effect
-    }
-    console.log(rowData);
+function prepareChartData(pokemonData) {
+    const rowData = [];
+    for (let i = 0; i < 6; i++) { rowData.push(pokemonData.stats[i].base_stat) }
+    return {
+        labels: ['HP', 'Attack', 'Defence', 'Special Attack', 'Special Defence', 'Speed'],
+        datasets: [{
+            data: rowData,
+            backgroundColor: ['rgb(255, 99, 132)', 'rgb(255, 159, 64)', 'rgb(255, 205, 86)', 'rgb(75, 192, 192)', 'rgb(54, 162, 235)', 'rgb(153, 102, 255)'],
+            borderWidth: 1
+        }]
+    };
+}
+
+function renderChart(ctx, chartData) {
+    const existingChart = Chart.getChart('statsArea');
+    if (existingChart) { existingChart.destroy(); }
+    const chartContainer = document.getElementById('statsArea').parentElement;
+    chartContainer.style.position = 'relative';
+    const yAxisLabels = chartContainer.querySelector('.chartjs-ylabel');
+    if (yAxisLabels) { yAxisLabels.style.textShadow = '0px 0px 12px white'; }
     new Chart(ctx, {
         type: 'bar',
-        data: {
-            labels: ['HP', 'Attack', 'Defence', 'Special Attack', 'Special Defence', 'Speed'],
-            datasets: [{
-                data: rowData,
-                backgroundColor: [
-                'rgb(255, 99, 132)',
-                'rgb(255, 159, 64)',
-                'rgb(255, 205, 86)',
-                'rgb(75, 192, 192)',
-                'rgb(54, 162, 235)',
-                'rgb(153, 102, 255)',],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            indexAxis: 'y',
-            plugins: {
-                legend:{
-                    labels:{
-                        font: {size: 0}
-                    }
-                }
-            },
-            scales: {
-                y: {
-                    ticks: { // Customize y-axis labels
-                        color: 'black' // Black color for labels
-                    }
-                },
-                x: {display: false},
-            },
-        }
+        data: chartData,
+        options: chartOptions
     });
-
 }
+
+
 
 function randomCards() {
     do {
@@ -130,21 +137,24 @@ function randomCards() {
     return randomNumber;
 }
 
-function displayOff(){
+function displayOff() {
     document.getElementById('fullscreen').style.display = "none";
 }
 
-async function pokeQuery(){
-    searchPoke = document.getElementById('searchQuery').value;
+async function pokeQuery(event) {
+    event.preventDefault(); // Standardverhalten des Formulars verhindern
+    let searchPoke = document.getElementById("searchQuery").value;
     document.getElementById('cards').innerHTML = '';
+    document.getElementById('searchQuery').innerHTML = ``;
     let url = `https://pokeapi.co/api/v2/pokemon/` + searchPoke;
     let response = await fetch(url);
     let responseAsJson = await response.json();
-    if(searchPoke==``){
+    if (searchPoke == ``) {
         renderPokedeck();
     }
-    if(response.status != 4){
-        renderCard(responseAsJson);
+    if (response.status != 4) {
+        pokeIndex = 0;
+        renderCard(responseAsJson, 1);
     }
-    
 }
+
