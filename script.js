@@ -38,13 +38,11 @@ async function renderBig(pokemonId, pokeIndex) {
 
 function cardBefore(pokeIndex) {
     let foundEntry = pokemonDataAsJSON.find(entry => entry.pokeIndex === pokeIndex-1);
-    console.log(foundEntry);
     renderBig(foundEntry.id, pokeIndex-1);
 }
 
 function cardAfter(pokeIndex) {
     let foundEntry = pokemonDataAsJSON.find(entry => entry.pokeIndex === pokeIndex+1);
-    console.log(foundEntry);
     renderBig(foundEntry.id, pokeIndex+1);
 }
 
@@ -127,8 +125,6 @@ function renderChart(ctx, chartData) {
     });
 }
 
-
-
 function randomCards() {
     do {
         randomNumber = Math.floor(Math.random() * 1024);
@@ -157,4 +153,3 @@ async function pokeQuery(event) {
         renderCard(responseAsJson, 1);
     }
 }
-
